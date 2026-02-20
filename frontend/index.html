@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Urban Mobility Explorer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%231e4a8a'><path d='M192 0c-17.7 0-32 14.3-32 32V64c0 .1 0 .1 0 .2c-38.6 2.2-72.3 27.3-85.2 64.1L39.6 228.8C16.4 238.4 0 261.3 0 288V432v48c0 17.7 14.3 32 32 32H64c17.7 0 32-14.3 32-32V432H416v48c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V432 288c0-26.7-16.4-49.6-39.6-59.2L437.2 128.3c-13-36.8-46.6-61.9-85.2-64.1c0-.1 0-.1 0-.2V32c0-17.7-14.3-32-32-32H192zM165.4 128H346.6c13.6 0 25.7 8.6 30.2 21.4L402.9 224H109.1l26.1-74.6c4.5-12.8 16.6-21.4 30.2-21.4zM96 288a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm288 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z'/></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo-icon">
+                    <i class="fas fa-taxi"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>NYC Urban Mobility Explorer</h1>
+                    <p>Yellow Taxi Trip Data - January 2019</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="trip-badge">
+                    <i class="fas fa-chart-line"></i>
+                    <span id="header-trips">Loading...</span> trips analyzed
+                </span>
+                <button class="team-badge">Team 6</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="total-trips">Loading...</h3>
+                    <p>TOTAL TRIPS</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="total-revenue">Loading...</h3>
+                    <p>TOTAL REVENUE</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="avg-distance">Loading...</h3>
+                    <p>AVG TRIP DISTANCE</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="avg-fare">Loading...</h3>
+                    <p>AVG FARE</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="avg-duration">Loading...</h3>
+                    <p>AVG DURATION</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="total-passengers">Loading...</h3>
+                    <p>TOTAL PASSENGERS</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="avg-tip">Loading...</h3>
+                    <p>AVG TIP</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="avg-passengers">Loading...</h3>
+                    <p>AVG PASSENGERS</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="filters-bar">
+            <button class="filter-btn" id="toggle-filters">
+                <i class="fas fa-filter"></i> Filters
+            </button>
+            <select id="borough-filter" class="select-box">
+                <option value="">BOROUGH</option>
+                <option value="Manhattan">Manhattan</option>
+                <option value="Brooklyn">Brooklyn</option>
+                <option value="Queens">Queens</option>
+                <option value="Bronx">Bronx</option>
+                <option value="Staten Island">Staten Island</option>
+            </select>
+            <select id="payment-type" class="select-box">
+                <option value="">PAYMENT</option>
+                <option value="Credit card">Credit Card</option>
+                <option value="Cash">Cash</option>
+            </select>
+            <input type="search" id="search-input" class="search-box" placeholder="Search zones, routes...">
+        </section>
+
+        <section class="advanced-filters" id="advanced-filters">
+            <div class="filter-group">
+                <label>Min Fare ($)</label>
+                <input type="number" id="min-fare" placeholder="0">
+            </div>
+            <div class="filter-group">
+                <label>Max Fare ($)</label>
+                <input type="number" id="max-fare" placeholder="100">
+            </div>
+            <div class="filter-actions">
+                <button id="apply-filters" class="btn-apply">Apply Filters</button>
+                <button id="reset-filters" class="btn-reset">Reset</button>
+            </div>
+        </section>
+
+        <section class="insights-section">
+            <h2 class="section-header">
+                <i class="fas fa-lightbulb"></i>
+                Key Insights
+            </h2>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon-box blue">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h4>Rush Hour Peak</h4>
+                    <p id="insight-1">Loading insights from database...</p>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon-box orange">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <h4>Night Riders Pay More</h4>
+                    <p id="insight-2">Loading insights from database...</p>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon-box green">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h4>Cash is Fading</h4>
+                    <p id="insight-3">Loading insights from database...</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="charts-layout">
+            <div class="chart-box">
+                <h3>Trips by Hour of Day</h3>
+                <p class="chart-desc">See when NYC moves the most</p>
+                <canvas id="hourly-trips-chart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Average Fare by Hour</h3>
+                <p class="chart-desc">Late-night rides cost more</p>
+                <canvas id="fare-hour-chart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Payment Methods</h3>
+                <p class="chart-desc">How people pay for trips</p>
+                <canvas id="payment-chart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Trip Distance Spread</h3>
+                <p class="chart-desc">Most trips are short rides</p>
+                <canvas id="distance-chart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Fare Distribution</h3>
+                <p class="chart-desc">What people pay per ride</p>
+                <canvas id="fare-dist-chart"></canvas>
+            </div>
+            <div class="chart-box wide">
+                <h3>Trips by Borough</h3>
+                <p class="chart-desc">Manhattan leads by a big margin</p>
+                <canvas id="borough-chart"></canvas>
+            </div>
+            <div class="chart-box wide">
+                <h3>Borough Details</h3>
+                <p class="chart-desc">Average stats for each area</p>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Borough</th>
+                                <th>Trips</th>
+                                <th>Avg Fare</th>
+                                <th>Avg Distance</th>
+                                <th>Avg Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="borough-table-body">
+                            <tr>
+                                <td colspan="5" class="loading">Loading from database...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="chart-box">
+                <h3>Weekly Trip Pattern</h3>
+                <p class="chart-desc">Weekends are more rides</p>
+                <canvas id="weekly-chart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Tip Percentage by Hour</h3>
+                <p class="chart-desc">Night riders tip more generously</p>
+                <canvas id="tip-chart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>January 2019 Weekly Trend</h3>
+                <p class="chart-desc">How the month shaped up</p>
+                <canvas id="monthly-trend-chart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Most Popular Routes</h3>
+                <p class="chart-desc">Where people go the most</p>
+                <canvas id="routes-chart"></canvas>
+            </div>
+        </div>
+
+        <section class="trips-section">
+            <h2 class="section-header">
+                <i class="fas fa-taxi"></i>
+                Recent Trips
+            </h2>
+            <p class="trips-subtitle" id="trips-count">Loading trips from database...</p>
+            <div class="trips-container">
+                <div class="table-wrapper">
+                    <table id="trips-table" class="trips-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Pickup</th>
+                                <th>Dropoff</th>
+                                <th>Distance</th>
+                                <th>Duration</th>
+                                <th>Fare</th>
+                                <th>Tip</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trips-tbody">
+                            <tr>
+                                <td colspan="7" class="loading">Loading trips from database...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="ranking-bar">
+                <select id="rank-by" class="select-box">
+                    <option value="fare">RANK BY FARE</option>
+                    <option value="distance">RANK BY DISTANCE</option>
+                    <option value="duration">RANK BY DURATION</option>
+                    <option value="tip">RANK BY TIP</option>
+                </select>
+                <select id="rank-order" class="select-box">
+                    <option value="desc">HIGHEST FIRST</option>
+                    <option value="asc">LOWEST FIRST</option>
+                </select>
+                <button id="apply-ranking" class="btn-apply">Apply Ranking</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>NYC Urban Mobility Explorer - ALU Software Engineering</p>
+            <p>Built by Methode Duhujubumwe | Cindy Saro Teta | MUTONI Keira | Sylivie TUMUKUNDE</p>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
